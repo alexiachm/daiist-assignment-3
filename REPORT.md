@@ -48,7 +48,7 @@ rules appear under two sources.
 
 ## Test set
 
-Claude drafted the first version of the questions and I reviewed them against the PDFs and the reference answers.
+Claude drafted the first version of the questions and I edited them a bit and reviewed them against the PDFs and the reference answers.
 36 questions in `eval/questions.csv`: 20 single, 8 multi (two passages needed), 8 unanswerable
 (close to the topic, for example whether a landlord can forbid a dog; none of the three laws mention pets).
 
@@ -246,9 +246,4 @@ cited article so they can check it. Facts behind this:
 
 I used Claude (Anthropic) as a coding assistant for the implementation: the indexer and chunking, retrieval, the MCP
 server, the agent and guardrails, and the evaluation script, and for a first draft of `AGENTS.md`, the subagent
-file and this report's structure. I also used Claude Code once to run the subagent. I ran and tested everything on
-my machine. Claude wrote the code and drafted the first version of the 36 test questions; I reviewed
-the questions against the PDFs, and I ran and tested the code. This project was very confusing for me, so I relied
-on Claude to explain each step. Claude also helped draft the text of this report from my answers and the files in
-the repository, and I read and edited it. The use case, my grades in `eval/human_labels.csv`, the failure
-analysis and the decision are my own.
+file and this report's structure after making my decisions on what I wanted it to be and answering the report myself (Claude helped me structure it properly). I also used Claude Code once to run the subagent. I ran and tested everything on my machine. Claude wrote most of the code and drafted the first version of the 36 test questions; I edited and reviewed the questions against the PDFs, and I ran and tested the code. This project was very confusing for me, so I relied on Claude to explain each step as I consider this project to be the hardest of the three we have done this semester so far. Claude also helped draft part of the text of this report from my answers and the files in the repository, and I read and edited it accordingly. The use case, my grades in `eval/human_labels.csv`, the failure analysis and the decision are my own.
