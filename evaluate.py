@@ -19,6 +19,7 @@ Everything is saved in eval/. Answers are saved one by one and reused on a re-ru
 import argparse
 import csv
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -31,6 +32,7 @@ ROOT = Path(__file__).resolve().parent
 EVAL = ROOT / "eval"
 QUESTIONS = EVAL / "questions.csv"
 ANSWERS = EVAL / "answers.jsonl"
+JUDGEMENTS = EVAL / "judgements.jsonl"
 QUERY_VECTORS = EVAL / "query_vectors.json"
 KS = (1, 3, 5)
 
@@ -176,7 +178,8 @@ def judge(q: dict, a: dict) -> dict:
         reason: str
 
     evidence = "\n\n".join(c["result"] for c in a["trace"] if c["tool"] == "search") or "(nothing retrieved)"
-    model = ChatGoogleGenerativeAI(model=agent.MODEL, google_api_key=load_api_key(), temperature=0)
+    model = ChatGoogleGenerativeAI(model=os.environ.get("JUDGE_MODEL", agent.MODEL),
+                                   google_api_key=load_api_key(), temperature=0)
     prompt = (f"{RUBRIC}\n\nQUESTION ({q['kind']}): {q['question']}\nREFERENCE ANSWER: {q['reference_answer']}\n\n"
               f"RETRIEVED PASSAGES:\n{evidence}\n\nASSISTANT ANSWER:\n{a['answer']}")
     verdict = model.with_structured_output(Verdict).invoke(prompt)
@@ -216,16 +219,31 @@ def main(redo: bool = False) -> None:
     print("Retrieval:", json.dumps(retrieval_report, indent=2), file=sys.stderr)
 
     answers = run_agent_on(questions, redo)
+    judged = {} if redo or not JUDGEMENTS.exists() else {
+        r["id"]: r for r in map(json.loads, filter(str.strip, JUDGEMENTS.open(encoding="utf-8")))}
     rows = []
     for q in questions:
         a = answers.get(q["id"])
         if not a:
             continue
+        if q["id"] not in judged:
+            try:
+                verdict = judge(q, a)
+            except Exception as error:  # noqa: BLE001 - quota: keep verdicts so far, resume later
+                print(f"judge stopped at {q['id']}: {str(error)[:200]}", file=sys.stderr)
+                break
+            judged[q["id"]] = {"id": q["id"], **verdict}
+            with JUDGEMENTS.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(judged[q["id"]], ensure_ascii=False) + "\n")
         row = {"id": q["id"], "kind": q["kind"], "question": q["question"], "answer": a["answer"],
                "tool_calls": a["tool_calls"], "seconds": a["seconds"], "guardrail": a.get("guardrail"),
                **a["tokens"], **code_checks(q, a)}
-        row.update(judge(q, a))
+        row.update({k: v for k, v in judged[q["id"]].items() if k != "id"})
         rows.append(row)
+    if len(rows) < len(questions):
+        print(f"\nNOT FINISHED: {len(rows)} of {len(questions)} questions answered and judged. "
+              "Run the same command again later (or with another GEMINI_MODEL / JUDGE_MODEL); "
+              "it resumes where it stopped.", file=sys.stderr)
 
     EVAL.mkdir(exist_ok=True)
     if rows:
