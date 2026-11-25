@@ -34,7 +34,11 @@
   "avg_input_tokens": 6224,
   "avg_output_tokens": 632,
   "agreement_with_judge": {
-    "graded_by_you": 0,
-    "compared": 0
+    "graded_by_you": 24,
+    "compared": 24,
+    "correct_agreement": 0.833,
+    "correct_kappa": 0.429,
+    "supported_agreement": 0.708,
+    "supported_kappa": 0.0
   }
 }
