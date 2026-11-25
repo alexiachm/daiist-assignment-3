@@ -5,7 +5,7 @@ q03,1,1,
 q05,1,1,
 q06,1,1,
 q09,0,0,"The answer correctly explains the 30-day right of first refusal and the right of redemption. However, it incorrectly states that the parties cannot agree to waive the tenant's right of first refusal. Article 25.8 expressly allows the parties to agree on a waiver. This is a significant legal error."
-q10,0,0,"The answer correctly identifies the one-month mandatory deposit and the maximum two-month additional guarantee. However, it incorrectly claims that landlords cannot require rent default insurance or similar coverage under any circumstances. This prohibition is not established by Article 36.5. The main answer is correct, but the additional legal claim is unsupported."
+q10,1,1,"Article 36.5 says ""En ningún caso podrá exigirse al arrendatario la contratación de seguros de impago de renta u otras coberturas análogas"", so the answer is correct and supported."
 q11,1,0,"The answer correctly identifies that the landlord must return the remaining deposit at the end of the lease and that unpaid amounts accrue legal interest if not returned within one month after the keys are handed over. However, it adds claims about a termination document and a presumption that the property was returned in adequate condition, which are not supported by the cited LAU Article 36."
 q13,1,1,
 q14,1,1,
